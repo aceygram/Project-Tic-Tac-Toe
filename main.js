@@ -113,6 +113,21 @@ function displayController (
         }
     }
 
+    function allBoxesClicked(board) {
+        // Iterate through each row in the board
+        for (let row = 0; row < board.length; row++) {
+          // Iterate through each cell in the row
+          for (let cell = 0; cell < board[row].length; cell++) {
+            // If any cell has not been clicked, return false
+            if (board[row][cell].getValue() === '') {
+              return false;
+            }
+          }
+        }
+        // If all cells have been clicked, return true
+        return true;
+      }
+
     // Helper function to check for a win condition
     const checkWin = (boardData, marker) => {
         const rows = boardData.length;
@@ -179,7 +194,12 @@ function displayController (
             const activePlayerMarker = getActivePlayer().marker;
     
             //return nothing when condition is met
-            if (checkWin(boardData, activePlayerMarker)) return;
+            if (checkWin(boardData, activePlayerMarker)) {
+                return;
+            } else if(allBoxesClicked(boardData)){
+                switchPlayerTurn();
+                return;
+            };
 
             //switch player after the active player has made his move, also print a new round when the condition has been met
             switchPlayerTurn();
@@ -196,7 +216,8 @@ function displayController (
         getBoard: board.getBoard,
         resetBoard: board.resetBoard,
         checkWin,
-        switchPlayerTurn
+        switchPlayerTurn,
+        allBoxesClicked
     }; 
 };
  
@@ -225,6 +246,12 @@ function ScreenController() {
         
         // get the lates version of the checkwin function 
         const checkWin = game.checkWin;
+
+        // get the latest version of the board with the all boxes ticked function 
+        const allBoxesClicked = game.allBoxesClicked;
+
+        // get the latest version of the board with the switch player function 
+        const switchPlayerTurn = game.switchPlayerTurn;
        
         // run the checkwin function then set the conditions
         if (checkWin(board, activePlayerMarker)) {
@@ -242,7 +269,20 @@ function ScreenController() {
            boardDiv.appendChild(reset);
            boardDiv.classList.remove('board-layout');
            boardDiv.classList.add('board-reset');
+           switchPlayerTurn();
 
+        } else if (allBoxesClicked(board)){
+           // display the winner on the DOM
+           playerTurnDiv.textContent = `It is a Tie`;
+
+           //set the content on the reset button, add a class to it
+           reset.textContent = 'Reset';
+           reset.classList.add('reset');
+
+           //append the button to my board then remove and add the necessary class
+           boardDiv.appendChild(reset);
+           boardDiv.classList.remove('board-layout');
+           boardDiv.classList.add('board-reset');
         } else {
             // Display player's turn then remove and add the necessary class
             playerTurnDiv.textContent = `${activePlayer.name}'s turn...`
@@ -290,5 +330,5 @@ function ScreenController() {
     updateScreen();
 }
 
-// initialize the game 
-ScreenController();
+const start = document.querySelector('.start');
+start.addEventListener("click", ScreenController)
