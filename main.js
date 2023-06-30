@@ -2,11 +2,8 @@ function Gameboard ()  {
     const rows = 3;
     const columns = 3;
     const gameBoard = [];
- 
- //    const container = document.querySelector('.container');
- //    const boxes = Array.from(container.querySelectorAll('.boxes'));
- 
- 
+
+    //created a 2d 3x3 array table for the game 
     for (let i = 0; i < rows; i++) {
         gameBoard[i] = [];
         for (let j = 0; j < columns; j++) {
@@ -16,6 +13,7 @@ function Gameboard ()  {
 
     const getBoard = () => gameBoard;
 
+    //created 
     const dropToken = (column, row, player) => {
         const targetCell = gameBoard[row][column];
     
@@ -91,6 +89,16 @@ function displayController (
         console.log(`${getActivePlayer().name}'s turn.`);
     };
     
+    //check if the boxes have been clicked already
+    function checkIfBoxClicked(column, row) {
+        const game = board.getBoard();
+        if (game[row][column].getValue() !== '') {
+          return true;
+        } else {
+          return false;
+        }
+      }
+
     // Helper function to check for a win condition
     const checkWin = (boardData, marker) => {
         const rows = boardData.length;
@@ -135,24 +143,33 @@ function displayController (
     };
 
     const playRound = (column, row) => {
-        console.log(`${getActivePlayer().name}'s marker is on column ${column} and row ${row}`);
-    
-        board.dropToken(column, row, getActivePlayer().marker);
+        const error = document.querySelector('.error');
 
-        // Check for a win condition
-        const boardData = board.getBoard();
-        const activePlayerMarker = getActivePlayer().marker;
+        if (checkIfBoxClicked(column, row)) {
+            error.textContent = 'Please select another box, this box has already been selected!';
+            error.style.color = 'red';
+        }else {
+            error.textContent = '';
+            console.log(`${getActivePlayer().name}'s marker is on column ${column} and row ${row}`);
+    
+            board.dropToken(column, row, getActivePlayer().marker);
+
+            // Check for a win condition
+            const boardData = board.getBoard();
+            const activePlayerMarker = getActivePlayer().marker;
     
 
-        if (checkWin(boardData, activePlayerMarker)) {
+            if (checkWin(boardData, activePlayerMarker)) {
             //    console.log(`${getActivePlayer().name} wins!`);
             // Perform any necessary actions when a player wins
             // For example, show a message or reset the game
             return;
-        }
+            }
 
-        switchPlayerTurn();
-        printNewRound();
+            switchPlayerTurn();
+            printNewRound();
+        }
+        
     };
 
     printNewRound();
@@ -162,7 +179,8 @@ function displayController (
         getActivePlayer,
         getBoard: board.getBoard,
         resetBoard: board.resetBoard,
-        checkWin
+        checkWin,
+        switchPlayerTurn
     }; 
 };
  
