@@ -1,10 +1,76 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  scroll-behavior: smooth;
+  font-family: 'Modak', cursive;
+}
+
+.game {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 30px;
+  background-color: rgb(197, 152, 40);
+  color: rgb(255, 254, 254);
+  fill: white;
+}
+
+.header .container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 30px;
+}
+
+.header svg {
+  height: 60px;
+}
+
+.header p {
+  margin-top: 7px;
+}
+
+.header button,
+.reset {
+  font-size: 25px;
+  padding: 10px 20px;
+  margin-right: 10px;
+  background-color: white;
+  border: 2px solid rgb(197, 152, 40);
+  border-radius: 50px;
+  cursor: pointer;
+  color: rgb(197, 152, 40);
+  transition: 1s;
+}
+
+.header button:hover,
+.reset:hover {
+background-color: rgb(197, 152, 40);
+color: white;
+border: 2px solid white;
+}
+
+.turn,
+.error{
+  font-family: 'Odibee Sans', cursive;
+  letter-spacing: 1.5px;
+}
+
 .board {
-    height: 500px;
-    width: 500px;
-    border: 1px solid black;
-    gap: 2px;
-    padding: 2px;
-    background-color: yellow;
+  height: 400px;
+  width: 500px;
+  border: 1px solid black;
+  gap: 2px;
+  padding: 2px;
+  background-color: rgb(197, 152, 40);
 }
 
 .board-layout {
@@ -14,14 +80,14 @@
 }
 
 .cell {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    font-size: 2rem;
-    border: 1px solid grey;
-    background: white;
-    cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  font-size: 4rem;
+  border: 1px solid grey;
+  background: white;
+  cursor: pointer;
 }
 
 .board-reset {
@@ -30,6 +96,7 @@
   align-items: center;
 }
 
-.reset {
-
+.error{
+  height: 30px;
+  margin-bottom: 10px;
 }
