@@ -12,6 +12,10 @@ function Gameboard ()  {
         }
     }
 
+    const askName = () =>{
+        prompt('what is your name?');
+    }
+
     // function to get the gameboard array
     const getBoard = () => gameBoard;
 
@@ -43,7 +47,8 @@ function Gameboard ()  {
         getBoard,
         dropToken,
         printBoard,
-        resetBoard
+        resetBoard,
+        askName
     };
 };
 
@@ -65,15 +70,33 @@ function block (){
         getValue,
     }
 };
+
+function Players(){
+    const playerOne = () =>{
+        const player = prompt("what is the name for Player One?");
+        return player;
+    }
+
+    const playerTwo = () =>{
+        const player = prompt("what is the name for Player Two?");
+        return player;
+    }
+
+    return{
+        playerOne,
+        playerTwo
+    }
+}
+
  
 //created a display module which handles  and display the necessary game functions like to check win conditions, to switch players and initiate a new round playRound
 function displayController (
-    playerOneName = "Player One",
-    playerTwoName = "Player Two"
+    playerOneName = Players().playerOne(),
+    playerTwoName = Players().playerTwo()
 ){
     // stored the gameboard function in a variable
     const board = Gameboard();
-    
+
     // added an array with the player object and their marker
     const players = [
         {
@@ -85,6 +108,8 @@ function displayController (
             marker: "O"
         }
     ];
+
+    
 
     //made the player one the first active player
     let activePlayer = players[0];
