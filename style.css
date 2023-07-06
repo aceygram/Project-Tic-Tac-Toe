@@ -243,4 +243,9 @@ form button:hover {
   .error{
     margin: 20px 0;
   }
+
+  .turn,
+  .error {
+    padding: 0 20px;
+  }
 }
