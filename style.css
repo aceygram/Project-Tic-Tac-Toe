@@ -18,7 +18,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 10px 30px;
-  background-color: rgb(197, 152, 40);
+  background-color: rgb(2, 112, 26);
   color: rgb(255, 254, 254);
   fill: white;
 }
@@ -58,10 +58,84 @@ color: white;
 border: 2px solid white;
 }
 
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  transition: 1s;
+}
+
+.form-hide {
+  display: none;
+}
+
+form {
+  width: 350px;
+  background-color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 1rem 1.5rem;
+  text-align: center;
+  position: relative;
+}
+
+form input,
+form input::placeholder{
+  font-size: 1.5rem;
+}
+
+form h3 {
+  padding-bottom: 1rem;
+  color: black;
+  font-family: 'Odibee Sans', cursive;
+  letter-spacing: 1.5px;
+  font-size: 2rem;
+}
+
+form input[type='text'] {
+  width: 100%;
+  margin-bottom: 1rem;
+  padding: 15px 10px;
+  border-radius: 10px;
+  border: 3px solid grey;
+  outline: none;
+  font-family: 'Odibee Sans', cursive;
+  letter-spacing: 1.5px;
+}
+
+form button {
+  display: block;
+  width: 100%;
+  padding: 19px;
+  background-color: rgb(197, 152, 40);
+  border-radius: 10px;
+  border: 3px solid rgb(197, 152, 40);
+  color: white;
+  outline: none;
+  cursor: pointer;
+  margin-bottom: 1rem;
+  transition: 1s;
+  font-size: 1.2rem;
+}
+
+form button:hover {
+  filter: contrast(90%);
+  background-color: white;
+  color: rgb(197, 152, 40);
+}
+
 .turn,
 .error{
   font-family: 'Odibee Sans', cursive;
   letter-spacing: 1.5px;
+  text-align: center;
+  padding: 0 40px;
 }
 
 .board {
@@ -70,7 +144,8 @@ border: 2px solid white;
   border: 1px solid black;
   gap: 2px;
   padding: 2px;
-  background-color: rgb(197, 152, 40);
+  background-color: rgb(2, 112, 26);
+  margin-top: 15px;
 }
 
 .board-layout {
@@ -88,6 +163,7 @@ border: 2px solid white;
   border: 1px solid grey;
   background: white;
   cursor: pointer;
+  color: rgb(197, 152, 40);
 }
 
 .board-reset {
@@ -99,4 +175,71 @@ border: 2px solid white;
 .error{
   height: 30px;
   margin-bottom: 10px;
+}
+
+@media only screen and (max-width: 650px){
+	.turn{
+    font-size: 1.5rem;
+  }
+
+  .error{
+    font-size: 1.1rem;
+  }
+
+  .board {
+    height: 400px;
+    width: 400px;
+  }
+}
+
+@media only screen and (max-width: 450px){
+
+  .board {
+    height: 330px;
+    width: 330px;
+  }
+
+  .header {
+    padding: 15px 20px;
+
+  }
+
+  .header .container {
+    font-size: 20px;
+  }
+
+  .header svg {
+    height: 40px;
+  }
+
+  .header button,
+  .reset {
+    font-size: 20px;
+    padding: 7px 15px;
+  }
+
+  .cell {
+    font-size: 3.5rem;
+  }
+
+  form {
+    width: 250px;
+    padding: .8rem 1.3rem;
+  }
+
+  form h3 {
+    font-size: 1.7rem;
+  }
+  
+  form input,
+  form input::placeholder{
+  font-size: 1.3rem;
+}
+
+form button {
+  padding: 15px;
+  /* margin-bottom: rem; */
+  /* transition: 1s; */
+  /* font-size: 1.2rem; */
+}
 }
