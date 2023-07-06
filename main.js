@@ -12,16 +12,15 @@ function Gameboard ()  {
         }
     }
 
-    const askName = () =>{
-        prompt('what is your name?');
-    }
-
     // function to get the gameboard array
     const getBoard = () => gameBoard;
 
     //created  a drop token function that inserts the player's marker to the rows and columns
     const dropToken = (column, row, player) => {
-        const targetCell = gameBoard[row][column];
+        const targetCell = gameBoard[row]?.[column];
+
+        // Add boundary check to prevent accessing undefined elements
+        if (!targetCell) return;
     
         if (targetCell.getValue() !== '') return;
     
@@ -48,7 +47,6 @@ function Gameboard ()  {
         dropToken,
         printBoard,
         resetBoard,
-        askName
     };
 };
 
@@ -71,28 +69,32 @@ function block (){
     }
 };
 
-function Players(){
+function getPlayerNames (){
+    addPlayerName.className = 'overlay'
+    
+    
     const playerOne = () =>{
-        const player = prompt("what is the name for Player One?");
-        return player;
+        const player = firstPlayer.value;
+        return player || 'AI';
     }
 
     const playerTwo = () =>{
-        const player = prompt("what is the name for Player Two?");
-        return player;
+        const player =  secondPlayer.value;
+        return player || 'AI';
     }
+
 
     return{
         playerOne,
-        playerTwo
+        playerTwo,
     }
 }
 
  
 //created a display module which handles  and display the necessary game functions like to check win conditions, to switch players and initiate a new round playRound
 function displayController (
-    playerOneName = Players().playerOne(),
-    playerTwoName = Players().playerTwo()
+    playerOneName = getPlayerNames().playerOne(),
+    playerTwoName = getPlayerNames().playerTwo()
 ){
     // stored the gameboard function in a variable
     const board = Gameboard();
@@ -131,6 +133,16 @@ function displayController (
     //function to check if the boxes have been clicked already
     function checkIfBoxClicked(column, row) {
         const game = board.getBoard();
+        // Add boundary checks to prevent accessing undefined elements
+        if (
+            row < 0 ||
+            row >= game.length ||
+            column < 0 ||
+            column >= game[row].length
+        ) {
+            return false;
+        }
+        
         if (game[row][column].getValue() !== '') {
           return true;
         } else {
@@ -196,6 +208,76 @@ function displayController (
         return false;
     };
 
+    function evaluate(board) {
+        if (checkWin(board, players[1].marker)) {
+          return 1;
+        } else if (checkWin(board, players[0].marker)) {
+          return -1;
+        } else {
+          return 0;
+        }
+      }
+    
+      function minimax(board, depth, maximizingPlayer) {
+        const winner = evaluate(board);
+        if (winner !== 0) {
+          return winner * depth;
+        }
+    
+        if (allBoxesClicked(board)) {
+          return 0;
+        }
+    
+        if (maximizingPlayer) {
+          let maxEval = -Infinity;
+          for (let row = 0; row < board.length; row++) {
+            for (let cell = 0; cell < board[row].length; cell++) {
+              if (board[row][cell].getValue() === '') {
+                board[row][cell].addMarker(players[1].marker);
+                const eval = minimax(board, depth + 1, false);
+                board[row][cell].addMarker('');
+                maxEval = Math.max(maxEval, eval);
+              }
+            }
+          }
+          return maxEval;
+        } else {
+          let minEval = Infinity;
+          for (let row = 0; row < board.length; row++) {
+            for (let cell = 0; cell < board[row].length; cell++) {
+              if (board[row][cell].getValue() === '') {
+                board[row][cell].addMarker(players[0].marker);
+                const eval = minimax(board, depth + 1, true);
+                board[row][cell].addMarker('');
+                minEval = Math.min(minEval, eval);
+              }
+            }
+          }
+          return minEval;
+        }
+      }
+    
+      function findBestMove(board) {
+        let bestEval = -Infinity;
+        let bestMove = { row: -1, cell: -1 };
+    
+        for (let row = 0; row < board.length; row++) {
+          for (let cell = 0; cell < board[row].length; cell++) {
+            if (board[row][cell].getValue() === '') {
+              board[row][cell].addMarker(players[1].marker);
+              const eval = minimax(board, 0, false);
+              board[row][cell].addMarker('');
+              if (eval > bestEval) {
+                bestEval = eval;
+                bestMove = { row, cell };
+              }
+            }
+          }
+        }
+    
+        return bestMove;
+      }
+
     //the playround function that displays error if a cell have been chosen, check if win conditions are met to trigger it, switch player then print new round
     const playRound = (column, row) => {
         // selected the error clas from the index.html file 
@@ -220,6 +302,9 @@ function displayController (
     
             //return nothing when condition is met
             if (checkWin(boardData, activePlayerMarker)) {
+                setTimeout(() => {
+
+                }, 1000)
                 return;
             } else if(allBoxesClicked(boardData)){
                 switchPlayerTurn();
@@ -230,7 +315,13 @@ function displayController (
             switchPlayerTurn();
             printNewRound();
         }
-        
+
+        // if (activePlayer.name === 'AI') {
+        //         setTimeout(() => {
+        //             const { row, cell } = findBestMove(board.getBoard(), 1000);
+        //             playRound(cell, row);
+        //         }, 1000);
+        //       }
     };
     // print new round when the screen controller is initially called 
     printNewRound();
@@ -242,7 +333,11 @@ function displayController (
         resetBoard: board.resetBoard,
         checkWin,
         switchPlayerTurn,
-        allBoxesClicked
+        allBoxesClicked,
+        evaluate,
+        minimax,
+        findBestMove,
+        printNewRound
     }; 
 };
  
@@ -258,6 +353,9 @@ function ScreenController() {
 
     // get the latest version of the board with the reset function 
     const resetboard = game.resetBoard;
+
+    // get the latest version of the board with the switch player function 
+    const printNewRound = game.printNewRound;
 
     // function to update the screen every round 
     const updateScreen = () => {
@@ -280,7 +378,32 @@ function ScreenController() {
        
         // run the checkwin function then set the conditions
         if (checkWin(board, activePlayerMarker)) {
-            // display the winner on the console 
+            // Function to show the code
+            const showCode = () => {
+                board.forEach((row, rowIndex) => {
+                row.forEach((cell, columnIndex) => {
+                    // Anything clickable should be a button!!
+                    const cellButton = document.createElement("button");
+                    cellButton.classList.add("cell");
+                    // Create data attributes to identify the column and row
+                    cellButton.dataset.column = columnIndex;
+                    cellButton.dataset.row = rowIndex;
+                    cellButton.textContent = cell.getValue();
+                    boardDiv.appendChild(cellButton);
+                });
+                });
+            
+                // Remove the code after 5 seconds
+                setTimeout(() => {
+                boardDiv.innerHTML = ''; // Remove the code by emptying the container element
+                }, 1500);
+            };
+            
+            // Call the showCode function to display the code
+            showCode();
+            
+            setTimeout(() => {
+                // display the winner on the console 
            console.log(`${game.getActivePlayer().name} wins!`);
 
            // display the winner on the DOM
@@ -292,13 +415,19 @@ function ScreenController() {
 
            //append the button to my board then remove and add the necessary class
            boardDiv.appendChild(reset);
-           boardDiv.classList.remove('board-layout');
            boardDiv.classList.add('board-reset');
+           boardDiv.classList.remove('board-layout');
            switchPlayerTurn();
-
+            }, 1500)
+           
+            return;
         } else if (allBoxesClicked(board)){
            // display the winner on the DOM
            playerTurnDiv.textContent = `It is a Tie`;
+
+           // display tie in the dom
+           console.log('It is a Tie!');
+
 
            //set the content on the reset button, add a class to it
            reset.textContent = 'Reset';
@@ -308,9 +437,10 @@ function ScreenController() {
            boardDiv.appendChild(reset);
            boardDiv.classList.remove('board-layout');
            boardDiv.classList.add('board-reset');
+           return;
         } else {
             // Display player's turn then remove and add the necessary class
-            playerTurnDiv.textContent = `${activePlayer.name}'s turn...`
+            playerTurnDiv.textContent = `${activePlayer.name}'s turn, your marker is ${activePlayer.marker}`
             boardDiv.classList.remove('board-reset');
             boardDiv.classList.add('board-layout');
             
@@ -328,6 +458,15 @@ function ScreenController() {
                 });
             });
         }
+
+        if (activePlayer.name === 'AI') {
+            setTimeout(() => {
+                const { row, cell } = game.findBestMove(game.getBoard(), 1000);
+                game.playRound(cell, row);
+                updateScreen();
+            }, 1500);
+            return;
+          }
     }
    
     // Add event listener for the board
@@ -347,13 +486,29 @@ function ScreenController() {
 
     //added event handler for the reset button,  call the reset function and the update screen function
     reset.addEventListener('click', () =>{
-    resetboard();
-    updateScreen();
+        resetboard();
+        printNewRound();
+        updateScreen();
     });
 
     // Initial render
     updateScreen();
 }
 
+const firstPlayer = document.getElementById('PlayerOne');
+const secondPlayer = document.getElementById('PlayerTwo');
+const addPlayerName = document.getElementById('addPlayerName');
+
+const form = document.querySelector('form');
+form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    ScreenController();
+
+    addPlayerName.className = 'form-hide';
+    firstPlayer.value = '';
+    secondPlayer.value = '';
+})
+
+
 const start = document.querySelector('.start');
-start.addEventListener("click", ScreenController)
+start.addEventListener("click", getPlayerNames)
