@@ -85,6 +85,15 @@ form {
   position: relative;
 }
 
+form svg {
+  width: 50px;
+  position: absolute;
+  top: -30px;
+  right: -30px;
+  fill: white;
+  cursor: pointer;
+}
+
 form input,
 form input::placeholder{
   font-size: 1.5rem;
@@ -122,6 +131,7 @@ form button {
   margin-bottom: 1rem;
   transition: 1s;
   font-size: 1.2rem;
+  margin-top: 1rem;
 }
 
 form button:hover {
@@ -175,6 +185,13 @@ form button:hover {
 .error{
   height: 30px;
   margin-bottom: 10px;
+}
+
+.msg {
+  font-family: 'Odibee Sans', cursive;
+  color: red;
+  font-size: 20px;
+  height: 20px;
 }
 
 @media only screen and (max-width: 650px){
