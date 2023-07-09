@@ -75,7 +75,7 @@ function getPlayerNames (){
     
     const playerOne = () =>{
         const player = firstPlayer.value;
-        return player || 'AI';
+        return player;
     }
 
     const playerTwo = () =>{
@@ -471,15 +471,18 @@ function ScreenController() {
    
     // Add event listener for the board
     function clickHandlerBoard(e) {
-        const selectedColumn = e.target.dataset.column;
-        const selectedRow = e.target.dataset.row;
+      const selectedColumn = e.target.dataset.column;
+      const selectedRow = e.target.dataset.row;
 
-        // Make sure I've clicked a column and not the gaps in between
-        if (!selectedColumn) return;
+      // Make sure I've clicked a column and not the gaps in between
+      if (!selectedColumn) return;
 
-        //call the playround function with the selected column and row and update the screen
-        game.playRound(selectedColumn, selectedRow);
-        updateScreen();
+      // Check if it is AI's turn, if so, return without proceeding
+      if (game.getActivePlayer().name === 'AI') return;
+
+      //call the playround function with the selected column and row and update the screen
+      game.playRound(selectedColumn, selectedRow);
+      updateScreen();
     }
     // add event handlers for each cells clicked 
     boardDiv.addEventListener("click", clickHandlerBoard);
@@ -498,16 +501,28 @@ function ScreenController() {
 const firstPlayer = document.getElementById('PlayerOne');
 const secondPlayer = document.getElementById('PlayerTwo');
 const addPlayerName = document.getElementById('addPlayerName');
+const msg = document.querySelector('.msg');
+const close = document.querySelector('.close');
+  
+close.addEventListener('click', () => {
+  addPlayerName.className = 'form-hide';
+  msg.textContent = '';
+});
 
 const form = document.querySelector('form');
 form.addEventListener('submit', (e) => {
-    e.preventDefault();
+  e.preventDefault();
+  
+  if (firstPlayer.value === ''){
+    msg.textContent = 'Player One input empty!';
+  } else {
     ScreenController();
-
     addPlayerName.className = 'form-hide';
     firstPlayer.value = '';
     secondPlayer.value = '';
-})
+    msg.textContent = '';
+  }
+});
 
 
 const start = document.querySelector('.start');
